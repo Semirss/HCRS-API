@@ -50,6 +50,7 @@ export const getAllDoctors = async (req, res) => {
   }
 }
 
+
 export const addDoctor = async (req, res) => {
   const { name, email, address, phoneNumber, specialization, password } = req.body;
   try {
@@ -59,10 +60,8 @@ export const addDoctor = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Doctor result not found' });
     }
 
-    const personResult = await doctor.addPersonToDb();
-    if (!personResult) {
-      return res.status(404).json({ success: false, message: 'Person result not found' });
-    }
+   
+     
 
     res.status(201).json({ success: true, message: 'Doctor added successfully' });
   } catch(err) {

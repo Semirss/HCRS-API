@@ -14,9 +14,11 @@ import {
     receptionistLogin, updateReceptionist
 } from '../controllers/receptionistController.js';
 import { adminLogin } from '../controllers/adminController.js';
+import { login } from '../controllers/authController.js';
 
 const router = express.Router();
-
+//login 
+router.post('/login', login);
 // Admin
 router.post('/adminLogin', adminLogin);
 
@@ -33,7 +35,7 @@ router.delete('/deleteDoctor/:doctor_id', deleteDoctor);
 // Receptionists
 router.post('/receptionistLogin', receptionistLogin);
 router.get('/getReceptionists', getAllReceptionists);
-router.post('/addReceptionist', addReceptionist);
+router.post('/addReceptionist', addReceptionist); 
 router.put('/updateReceptionist/:receptionist_id', updateReceptionist);
 router.delete('/deleteReceptionist/:receptionist_id', deleteReceptionist);
 

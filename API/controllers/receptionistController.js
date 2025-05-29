@@ -1,5 +1,6 @@
 // import bcrypt from 'bcrypt';
 import Receptionist from "../models/receptionistModel.js";
+import { createHash } from 'crypto';
 
 // hash the password when adding a doctor
 export const receptionistLogin = async (req, res) => {
@@ -37,7 +38,7 @@ export const getAllReceptionists = async (req, res) => {
       if (!result) {
         return res.status(404).json({ success: false, message: 'Not Found' });
       }
-      res.status(200).json({ success: true, data: result[0][0], message: 'Receptionists fetched successfully' });
+      res.status(200).json({ success: true, data: result[0], message: 'Receptionists fetched successfully' });
   } catch(err) {
       console.error(err);
       res.status(500).json({ success: false, message: 'Internal server error' });
@@ -64,22 +65,22 @@ export const addReceptionist = async (req, res) => {
   }
 }
 
+
 export const updateReceptionist = async (req, res) => {
   const receptionist_id = req.params.receptionist_id;
-  const { email, address, phoneNumber } = req.body;
+  const { name, email, address, phoneNumber, password } = req.body;
   try {
-      const receptionist = new Receptionist({ email, address, phoneNumber });
+      const receptionist = new Receptionist({ name, email, address, phoneNumber, password});
       const result = await receptionist.updateReceptionist(receptionist_id);
-      if (!result) {
-        return res.status(404).json({ success: false, message: 'Not Found' });
+      if (!result || result[0].affectedRows === 0) {
+        return res.status(404).json({ success: false, message: 'Receptionist not found' });
       }
       res.status(200).json({ success: true, message: 'Receptionist updated' });
   } catch(err) {
-      console.error(err);
-      res.status(500).json({ success: false, message: 'Internal server error' });
+      console.error('Error updating receptionist:', err.message, err.stack);
+      res.status(500).json({ success: false, message: 'Internal server error', error: err.message });
   }
 }
-
 export const deleteReceptionist = async (req, res) => {
   const receptionist_id = req.params.receptionist_id;
   try {

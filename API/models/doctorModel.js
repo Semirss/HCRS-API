@@ -11,15 +11,16 @@ class Doctor extends Person {
     }
 
 
-    async fetchAllDoctors() {
-        const query = 'Select * from doctor';
-        try {
-            const result = await mysqlConnection.query(query);
-            return result
-        } catch(err) {
-            console.error(err);
-        }
-    }
+   async fetchAllDoctors() {
+  const query = 'SELECT * FROM doctor';
+  try {
+    const result = await mysqlConnection.query(query);
+    return result;
+  } catch (err) {
+    console.error(err);
+    throw err; 
+  }
+}
 
     async addDoctor() {
         const query = 'INSERT INTO doctor (name, email, address, phone_number, specialization, password) VALUES (?, ?, ?, ?, ?, ?)';
@@ -37,21 +38,28 @@ class Doctor extends Person {
             console.error(err);
         }
     }
-
-    async updateDoctor(doctor_id) {
-        const query = 'Update doctor set email=?, address=?, phone_number=? where doctor_id=?';
-        try {
-            const result = await mysqlConnection.query(query, [
-                this.email,
-                this.address,
-                this.phone_number,
-                doctor_id,
-            ]);
-            return result
-        } catch(err) {
-            console.error(err);
-        }
+async updateDoctor(doctor_id) {
+    const query = `
+        UPDATE doctor 
+        SET name = ?, email = ?, address = ?, phone_number = ?, specialization = ?, password = ?
+        WHERE doctor_id = ?
+    `;
+    try {
+        const result = await mysqlConnection.query(query, [
+            this.name,
+            this.email,
+            this.address,
+            this.phone_number,
+            this.#specialization,
+            this.password,
+            doctor_id,
+        ]);
+        return result;
+    } catch (err) {
+        console.error(err);
     }
+}
+
 
     async deleteDoctor(doctor_id) {
         const query = 'Delete from doctor where doctor_id=?';

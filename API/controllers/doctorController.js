@@ -1,8 +1,5 @@
 import Doctor from "../models/doctorModel.js";
 // import bcrypt from 'bcrypt';
-import MeidcalCard from "../models/medicalCardModel.js";
-import Appointment from "../models/appointmentModel.js";
-import QueueMgt from "../models/queueMgtModel.js";
 
 // hash the password when adding a doctor
 export const doctorLogin = async (req, res) => {
@@ -108,37 +105,6 @@ export const deleteDoctor = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Not Found' });
     }
     res.status(200).json({ success: true, message: 'Doctor deleted successfully' });
-  } catch(err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-}
-
-export const setAppointment = async (req, res) => {
-  const cardID = req.params.card_id;
-  try {
-    const card = new MeidcalCard();
-    const result = await card.fetchCardByID(cardID);
-
-    if (!result) {
-      return res.status(404).json({ success: false, message: 'Not Found' });
-    }
-
-    const date = result[0][0].date;
-
-    const appointment = new Appointment({ cardID, date });
-    const appointmentResult = await appointment.setAppointment();
-    if (!appointmentResult) {
-      return res.status(404).json({ success: false, message: 'Not Found' });
-    }
-
-    const queue = new QueueMgt({ cardID, date })
-    const queueResult = await queue.setToQueue();
-    if (!queueResult) {
-      return res.status(404).json({ success: false, message: 'Not Found' });
-    }
-
-    res.status(201).json({ success: true, message: 'Card added to appointment and queue' });
   } catch(err) {
     console.error(err);
     res.status(500).json({ success: false, message: 'Internal server error' });

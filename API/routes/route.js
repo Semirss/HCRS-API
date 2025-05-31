@@ -6,7 +6,7 @@ import {
    updateDoctor
 } from '../controllers/doctorController.js';
 import {
-    addFindingsToHistory, getAllCards, getCardByID
+    addFindingsToHistory, getAllCards, getCardByID,deleteQueue
 } from '../controllers/medicalCardController.js';
 import { getQueueMgt } from '../controllers/queueMgtController.js';
 import {
@@ -15,7 +15,7 @@ import {
 } from '../controllers/receptionistController.js';
 import { adminLogin } from '../controllers/adminController.js';
 import { login } from '../controllers/authController.js';
-import {  setAppointment, getAppointment,getAppointmentByDoctorID,getQueueByDoctorID, getAllQueue, deleteQueue } from '../controllers/appointmentController.js';
+import {  setAppointment, getAppointment,getAppointmentByDoctorID,getQueueByDoctorID, getAllQueue } from '../controllers/appointmentController.js';
 import { getDoctorId } from '../controllers/authController.js';
 const router = express.Router();
 //login 

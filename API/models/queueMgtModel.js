@@ -56,17 +56,6 @@ class QueueMgt {
       throw err;
     }
   }
-
-  async deleteQueue(queueID) {
-    const query = 'DELETE FROM queue_management WHERE queue_id = ?';
-    try {
-      const result = await mysqlConnection.query(query, [queueID]);
-      return result;
-    } catch (err) {
-      console.error('Error in deleteQueue:', err);
-      throw err;
-    }
-  }
 }
 
 export default QueueMgt;

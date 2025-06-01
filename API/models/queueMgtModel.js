@@ -56,6 +56,21 @@ class QueueMgt {
       throw err;
     }
   }
+ async getQueueByPatientID(patientID) {
+    const query = `
+      SELECT q.queue_id, q.card_id, q.date, q.status, q.doctor_id
+      FROM queue_management q
+      INNER JOIN medical_card m ON q.card_id = m.card_id
+      WHERE m.patient_id = ?
+    `;
+    try {
+      console.log('Fetching queue for patient_id:', patientID);
+      const result = await mysqlConnection.query(query, [patientID]);
+      return result;
+    } catch (err) {
+      console.error('Error in getQueueByPatientID:', err);
+      throw err;
+    }
+ }
 }
-
 export default QueueMgt;

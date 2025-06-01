@@ -8,7 +8,7 @@ import {
 import {
     addFindingsToHistory, getAllCards, getCardByID,deleteQueue
 } from '../controllers/medicalCardController.js';
-import { getQueueMgt } from '../controllers/queueMgtController.js';
+import { getQueueMgt, getQueueByPatientID } from '../controllers/queueMgtController.js';
 import {
     addReceptionist, deleteReceptionist, getAllReceptionists,
     receptionistLogin, updateReceptionist
@@ -48,6 +48,7 @@ router.get('/getCardByID/:card_id', getCardByID);
 router.post('/addFindings/:card_id', addFindingsToHistory);
 
 // Queue Management
+router.get('/queue/patient/:patient_id', getQueueByPatientID);
 router.get('/getQueues', getQueueMgt);
 router.get('/queue/doctor/:doctor_id', getQueueByDoctorID);
 router.get('/queue', getAllQueue);

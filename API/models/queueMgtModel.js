@@ -56,11 +56,12 @@ class QueueMgt {
       throw err;
     }
   }
- async getQueueByPatientID(patientID) {
+async getQueueByPatientID(patientID) {
     const query = `
-      SELECT q.queue_id, q.card_id, q.date, q.status, q.doctor_id
+      SELECT q.queue_id, q.card_id, q.date, q.status, q.doctor_id, d.name AS doctor_name
       FROM queue_management q
       INNER JOIN medical_card m ON q.card_id = m.card_id
+      INNER JOIN doctor d ON q.doctor_id = d.doctor_id
       WHERE m.patient_id = ?
     `;
     try {
@@ -71,6 +72,6 @@ class QueueMgt {
       console.error('Error in getQueueByPatientID:', err);
       throw err;
     }
- }
+}
 }
 export default QueueMgt;

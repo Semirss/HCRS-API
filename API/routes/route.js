@@ -28,8 +28,7 @@ router.post('/adminLogin', adminLogin);
 // Patients
 router.post('/registerPatient', registerPatient);
 router.get('/getallpatients', getAllPatients);
-router.delete('/deletepatient', deletePatient);
-
+router.delete('/deletePatient/:patient_id', deletePatient);
 
 // Doctors
 router.post('/doctorLogin', doctorLogin);

@@ -92,36 +92,19 @@ export const getPatientByCardID = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
+
 export const deletePatient = async (req, res) => {
-    const { patientID } = req.body;
+    const patient_id = req.params.patient_id;
     try {
-        // Log the request body for debugging
-        console.log("Request body:", req.body);
-
-        // Validate required fields
-        if (!patientID || isNaN(patientID) || patientID <= 0) {
-            return res.status(400).json({ success: false, message: "Valid patient ID is required" });
+        // Instantiate Patient with a minimal object to satisfy the constructor
+        const patient = new Patient({ name: 'temp' }); // 'temp' satisfies the name requirement
+        const result = await patient.deletePatient(patient_id);
+        if (!result) {
+            return res.status(404).json({ success: false, message: 'Patient not found' });
         }
-
-        // Check if patient exists before deleting
-        const checkQuery = 'SELECT * FROM patient WHERE patient_id = ?';
-        const checkResult = await mysqlConnection.query(checkQuery, [patientID]);
-        if (!checkResult || checkResult[0].length === 0) {
-            console.log(`No patient found with patient_id: ${patientID}`);
-            return res.status(404).json({ success: false, message: "Patient not found" });
-        }
-
-        // Delete patient from the database
-        const deleteQuery = 'DELETE FROM patient WHERE patient_id = ?';
-        const deleteResult = await mysqlConnection.query(deleteQuery, [patientID]);
-        if (!deleteResult || deleteResult[0].affectedRows === 0) {
-            console.log(`Delete failed for patient_id: ${patientID}`);
-            return res.status(400).json({ success: false, message: "Failed to delete patient" });
-        }
-
-        return res.status(200).json({ success: true, message: "Patient deleted successfully" });
+        res.status(200).json({ success: true, message: 'Patient deleted successfully' });
     } catch (err) {
-        console.error("Error in deletePatient:", err);
-        return res.status(500).json({ success: false, message: "Internal server error" });
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };

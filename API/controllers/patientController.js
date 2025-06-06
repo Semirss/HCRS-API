@@ -1,6 +1,6 @@
 import Patient from "../models/patientModel.js";
 import MedicalCard from "../models/medicalCardModel.js";
-
+import mysqlConnection from "../config/db.js";
 export const registerPatient = async (req, res) => {
     const { name, email, address, phoneNumber, history = {}, date = new Date(), password } = req.body; // Default history and date
     try {
@@ -44,6 +44,25 @@ export const registerPatient = async (req, res) => {
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
+
+export const getAllPatients = async (req, res) => {
+    try {
+        // Query to fetch all patients
+        const query = 'SELECT patient_id, name, email, phone_number FROM patient';
+        const [patients] = await mysqlConnection.query(query);
+
+        // Check if patients were retrieved
+        if (!patients || patients.length === 0) {
+            return res.status(404).json({ success: false, message: "No patients found" });
+        }
+
+        // Return the list of patients
+        return res.status(200).json({ success: true, data: patients });
+    } catch (err) {
+        console.error("Error in getAllPatients:", err);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+};
 export const getPatientByCardID = async (req, res) => {
   const cardID = req.params.card_id;
   try {
@@ -72,4 +91,37 @@ export const getPatientByCardID = async (req, res) => {
     console.error("Error in getPatientByCardID:", err);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
+};
+export const deletePatient = async (req, res) => {
+    const { patientID } = req.body;
+    try {
+        // Log the request body for debugging
+        console.log("Request body:", req.body);
+
+        // Validate required fields
+        if (!patientID || isNaN(patientID) || patientID <= 0) {
+            return res.status(400).json({ success: false, message: "Valid patient ID is required" });
+        }
+
+        // Check if patient exists before deleting
+        const checkQuery = 'SELECT * FROM patient WHERE patient_id = ?';
+        const checkResult = await mysqlConnection.query(checkQuery, [patientID]);
+        if (!checkResult || checkResult[0].length === 0) {
+            console.log(`No patient found with patient_id: ${patientID}`);
+            return res.status(404).json({ success: false, message: "Patient not found" });
+        }
+
+        // Delete patient from the database
+        const deleteQuery = 'DELETE FROM patient WHERE patient_id = ?';
+        const deleteResult = await mysqlConnection.query(deleteQuery, [patientID]);
+        if (!deleteResult || deleteResult[0].affectedRows === 0) {
+            console.log(`Delete failed for patient_id: ${patientID}`);
+            return res.status(400).json({ success: false, message: "Failed to delete patient" });
+        }
+
+        return res.status(200).json({ success: true, message: "Patient deleted successfully" });
+    } catch (err) {
+        console.error("Error in deletePatient:", err);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
 };

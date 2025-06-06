@@ -60,7 +60,7 @@ class Person {
                 this.email,
                 this.address,
                 this.phone_number,
-                this.password, // Store plain-text password
+                this.password, 
                 this.role
             ]);
             return result;

@@ -1,6 +1,6 @@
 // routes/route.js
 import express from 'express';
-import { registerPatient ,getPatientByCardID} from '../controllers/patientController.js';
+import { registerPatient ,getPatientByCardID,getAllPatients,deletePatient} from '../controllers/patientController.js';
 import {
     addDoctor, deleteDoctor, doctorLogin, getAllDoctors,
    updateDoctor
@@ -27,6 +27,9 @@ router.post('/adminLogin', adminLogin);
 
 // Patients
 router.post('/registerPatient', registerPatient);
+router.get('/getallpatients', getAllPatients);
+router.delete('/deletepatient', deletePatient);
+
 
 // Doctors
 router.post('/doctorLogin', doctorLogin);

@@ -1,11 +1,13 @@
 import Patient from "../models/patientModel.js";
 import MedicalCard from "../models/medicalCardModel.js";
 import mysqlConnection from "../config/db.js";
+
 export const registerPatient = async (req, res) => {
-    const { name, email, address, phoneNumber, history = {}, date = new Date(), password } = req.body; // Default history and date
+    const { name, email, address = '', phone_number, history = {}, date = new Date(), password } = req.body;
+    console.log('Request Body:', req.body); 
     try {
-        // Register patient
-        const patient = new Patient({ name, email, address, phoneNumber, password });
+   
+        const patient = new Patient({ name, email, address, phone_number, password });
         const patientResult = await patient.registerPatient();
         if (!patientResult || patientResult[0].affectedRows === 0) {
             return res.status(400).json({ success: false, message: "Failed to register patient" });
@@ -13,13 +15,13 @@ export const registerPatient = async (req, res) => {
 
         const patientID = patientResult[0].insertId;
 
-        // Add to person table
+        // Add to person is needed because i needed to add patient to person table
         const personResult = await patient.addPersonToDb();
         if (!personResult || personResult[0].affectedRows === 0) {
             return res.status(400).json({ success: false, message: "Failed to add patient to person table" });
         }
 
-        // Create medical card
+        // ofcourse Createing  medical card
         const card = new MedicalCard({ patientID, history: JSON.stringify(history), date, name });
         const cardResult = await card.setCard();
         if (!cardResult || cardResult[0].affectedRows === 0) {
@@ -32,7 +34,7 @@ export const registerPatient = async (req, res) => {
             return res.status(500).json({ success: false, message: "Failed to retrieve medical card ID" });
         }
 
-        // Verify medical card
+        // and Verify medical card
         const fetchCard = await card.fetchCardByID(cardID);
         if (!fetchCard || fetchCard[0].length === 0) {
             return res.status(404).json({ success: false, message: "Medical card not found after creation" });
@@ -41,63 +43,55 @@ export const registerPatient = async (req, res) => {
         return res.status(201).json({ success: true, message: "Patient registered, added to person table, and medical card created" });
     } catch (err) {
         console.error("Error in registerPatient:", err);
-        res.status(500).json({ success: false, message: "Internal server error" });
+        res.status(500).json({ success: false, message: `Internal server error: ${err.message}` });
     }
 };
 
 export const getAllPatients = async (req, res) => {
     try {
-        // Query to fetch all patients
         const query = 'SELECT patient_id, name, email, phone_number FROM patient';
         const [patients] = await mysqlConnection.query(query);
-
-        // Check if patients were retrieved
         if (!patients || patients.length === 0) {
             return res.status(404).json({ success: false, message: "No patients found" });
         }
-
-        // Return the list of patients
         return res.status(200).json({ success: true, data: patients });
     } catch (err) {
         console.error("Error in getAllPatients:", err);
         return res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
+
 export const getPatientByCardID = async (req, res) => {
-  const cardID = req.params.card_id;
-  try {
-    if (!cardID) {
-      return res.status(400).json({ success: false, message: "card_id is required" });
+    const cardID = req.params.card_id;
+    try {
+        if (!cardID) {
+            return res.status(400).json({ success: false, message: "card_id is required" });
+        }
+        const query = `
+            SELECT p.patient_id, p.name
+            FROM patient p
+            JOIN medical_card mc ON p.patient_id = mc.patient_id
+            WHERE mc.card_id = ?
+        `;
+        const [rows] = await mysqlConnection.query(query, [cardID]);
+        if (!rows || rows.length === 0) {
+            return res.status(404).json({ success: false, message: "Patient not found" });
+        }
+        res.status(200).json({
+            success: true,
+            data: rows[0],
+            message: "Patient fetched successfully",
+        });
+    } catch (err) {
+        console.error("Error in getPatientByCardID:", err);
+        res.status(500).json({ success: false, message: "Internal server error" });
     }
-
-    const query = `
-      SELECT p.patient_id, p.name
-      FROM patient p
-      JOIN medical_card mc ON p.patient_id = mc.patient_id
-      WHERE mc.card_id = ?
-    `;
-    const [rows] = await mysqlConnection.query(query, [cardID]);
-
-    if (!rows || rows.length === 0) {
-      return res.status(404).json({ success: false, message: "Patient not found" });
-    }
-
-    res.status(200).json({
-      success: true,
-      data: rows[0],
-      message: "Patient fetched successfully",
-    });
-  } catch (err) {
-    console.error("Error in getPatientByCardID:", err);
-    res.status(500).json({ success: false, message: "Internal server error" });
-  }
 };
 
 export const deletePatient = async (req, res) => {
     const patient_id = req.params.patient_id;
     try {
-        // Instantiate Patient with a minimal object to satisfy the constructor
-        const patient = new Patient({ name: 'temp' }); // 'temp' satisfies the name requirement
+        const patient = new Patient({ name: 'temp' });
         const result = await patient.deletePatient(patient_id);
         if (!result) {
             return res.status(404).json({ success: false, message: 'Patient not found' });

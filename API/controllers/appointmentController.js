@@ -47,7 +47,7 @@ export const setAppointment = async (req, res) => {
 
 export const getAppointmentByDoctorID = async (req, res) => {
   const doctorID = req.params.doctor_id;
-  console.log("Received doctorID:", doctorID); // Debug log
+  console.log("Received doctorID:", doctorID); 
 
   try {
     if (!doctorID) {

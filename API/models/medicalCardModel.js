@@ -20,14 +20,14 @@ class MedicalCard {
       return result;
     } catch (err) {
       console.error('Error in fetchAllCards:', err);
-      throw err; // Rethrow for controller to handle
+      throw err;
     }
   }
 
   async getHistory(cardID) {
     const query = 'SELECT history FROM medical_card WHERE card_id = ?';
     try {
-      const result = await mysqlConnection.query(query, [cardID]); // Pass cardID as array
+      const result = await mysqlConnection.query(query, [cardID]);
       return result;
     } catch (err) {
       console.error('Error in getHistory:', err);
@@ -65,7 +65,7 @@ class MedicalCard {
   async fetchCardByID(cardID) {
     const query = 'SELECT * FROM medical_card WHERE card_id = ?';
     try {
-      const result = await mysqlConnection.query(query, [cardID]); // Pass cardID as array
+      const result = await mysqlConnection.query(query, [cardID]);
       return result;
     } catch (err) {
       console.error('Error in fetchCardByID:', err);

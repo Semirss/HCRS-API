@@ -1,10 +1,7 @@
 // import bcrypt from 'bcrypt';
 import Receptionist from "../models/receptionistModel.js";
-import { createHash } from 'crypto';
 
-// hash the password when adding a doctor
 export const receptionistLogin = async (req, res) => {
-  // destructure name and password from the request body
   const { name, password } = req.body;
 
   try {
@@ -15,7 +12,6 @@ export const receptionistLogin = async (req, res) => {
       return res.status(404).json({ success: "false", message: "Not found" })
     }
 
-    // if the result length is equivalet to 0, the doctor is not registered
     if (result.length === 0)
       return res.status(404).json({ success: false, message: 'Receptionist not found' });
     

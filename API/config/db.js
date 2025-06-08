@@ -17,7 +17,7 @@ async function connectToDatabase() {
         return connection;
     } catch (err) {
         console.error("❌ Failed to connect to the database:", err.message);
-        process.exit(1); // Exit app if DB connection fails
+        process.exit(1); 
     }
 }
 

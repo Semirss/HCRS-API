@@ -3,7 +3,7 @@ import Person from "./personModel.js";
 
 class Doctor extends Person {
     #specialization;
-    
+    //this is nessasary inorderfor meto//
     // ={} ensures that if no object is passed, it defaults to an empty object instead of undefined.
     constructor ({ name, email=null, address=null, phoneNumber=null, specialization=null, password }={}) {
         super(name, email, address, phoneNumber, password, "doctor");

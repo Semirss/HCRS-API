@@ -1,23 +1,13 @@
 import mysqlConnection from "../config/db.js";
-import Person from "./personModel.js";
+import Person from "./personModel.js"; 
 
 class Patient extends Person {
-    constructor({ name, email = null, address = null, phoneNumber = null, password = null }) {
-        if (!name) {
-            throw new Error('Name is required for Patient');
-        }
-        super({ name, email, address, phoneNumber, password, role: 'patient' });
-    }
-
-    async deletePatient(patient_id) {
-        const query = 'DELETE FROM patient WHERE patient_id = ?';
-        try {
-            const result = await mysqlConnection.query(query, [patient_id]);
-            return result && result[0].affectedRows > 0;
-        } catch (err) {
-            console.error(err);
-            throw err; 
-        }
+    constructor({ name, email, address, phone_number, password }) {
+        super({ name, email, address, phone_number, password }); 
+        console.log('Patient constructor:', { name, email, address, phone_number, password }); 
+        this.address = address || '';
+        this.phone_number = phone_number || 'unknown';
+        this.role = 'patient';
     }
 
     async registerPatient() {
@@ -28,11 +18,45 @@ class Patient extends Person {
                 this.email,
                 this.address,
                 this.phone_number,
-                this.password // Store plain-text password
+                this.password
             ]);
             return result;
         } catch (err) {
             console.error("Database error registering patient:", err);
+            throw err;
+        }
+    }
+
+    async addPersonToDb() {
+        if (!this.name) {
+            throw new Error('Name is required for adding person to database');
+        }
+        const query = `INSERT INTO person (name, email, address, phone_number, password, role) VALUES (?, ?, ?, ?, ?, ?)`;
+        const values = [
+            this.name,
+            this.email,
+            this.address,
+            this.phone_number,
+            this.password,
+            this.role
+        ];
+        console.log('addPersonToDb values:', values); 
+        try {
+            const result = await mysqlConnection.execute(query, values);
+            return result;
+        } catch (err) {
+            console.error("Database error adding person:", err);
+            throw err;
+        }
+    }
+
+    async deletePatient(patient_id) {
+        const query = 'DELETE FROM patient WHERE patient_id = ?';
+        try {
+            const result = await mysqlConnection.execute(query, [patient_id]);
+            return result;
+        } catch (err) {
+            console.error("Database error deleting patient:", err);
             throw err;
         }
     }

@@ -1,13 +1,16 @@
 import mysqlConnection from "../config/db.js";
 
 class Person {
-    constructor({ name = null, email = null, address = null, phoneNumber = null, password = null, role = null } = {}) {
-        this.name = name;
-        this.email = email;
-        this.address = address;
-        this.phone_number = phoneNumber;
-        this.password = password;
-        this.role = role;
+    constructor({ name = null, email = null, address = null, phone_number = null, password = null, role = null } = {}) {
+        if (!name && !email && !phone_number && !password && !role) {
+            console.warn("Person constructor called with no valid fields; using defaults");
+        }
+        this.name = name || null;
+        this.email = email || null;
+        this.address = address || null;
+        this.phone_number = phone_number || null;
+        this.password = password || null;
+        this.role = role || null;
     }
 
     async login(name, password) {
@@ -40,7 +43,7 @@ class Person {
                     person_id: user.person_id,
                     name: user.name,
                     role: user.role,
-                    patient_id: user.patient_id // null for non-patients
+                    patient_id: user.patient_id
                 }
             };
         } catch (err) {
@@ -55,17 +58,17 @@ class Person {
         }
         const query = `INSERT INTO person (name, email, address, phone_number, password, role) VALUES (?, ?, ?, ?, ?, ?)`;
         try {
-            const result = await mysqlConnection.execute(query, [
-                this.name,
-                this.email,
-                this.address,
-                this.phone_number,
-                this.password, 
-                this.role
+            const [result] = await mysqlConnection.execute(query, [
+                this.name || null,
+                this.email || null,
+                this.address || null,
+                this.phone_number || null,
+                this.password || null,
+                this.role || null
             ]);
             return result;
         } catch (err) {
-            console.error("Database error adding person:", err);
+            console.error("Database error adding person:", err.message, err.stack);
             throw err;
         }
     }

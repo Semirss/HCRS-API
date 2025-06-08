@@ -1,9 +1,6 @@
 import Doctor from "../models/doctorModel.js";
-// import bcrypt from 'bcrypt';
 
-// hash the password when adding a doctor
 export const doctorLogin = async (req, res) => {
-  // destructure name and password from the request body
   const { name, password } = req.body;
 
   try {
@@ -14,16 +11,13 @@ export const doctorLogin = async (req, res) => {
       return res.status(404).json({ success: "false", message: "Not found" })
     }
 
-    // if the result length is equivalet to 0, the doctor is not registered
     if (result.length === 0)
       return res.status(404).json({ success: false, message: 'Not registered' });
     
 
-    // get the result data and compare the password destructured before to the result data password
     const doctorPwd = result[0][0];
     const isPasswordValid = password === doctorPwd.password;
     if (!isPasswordValid)
-      // 401 - unauthorized doctor
       return res.status(401).json({ success: false, message: "Invalid Password" });
 
     res.status(200).json({ success: true, message: 'Login success' });

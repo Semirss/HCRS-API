@@ -50,7 +50,7 @@ export const addFindingsToHistory = async (req, res) => {
       return res.status(400).json({ success: false, message: 'New findings or prescribed treatment required' });
     }
 
-    // Get the existing history
+    //  this is for Getting history
     const result = await card.fetchCardByID(card_id);
     if (!result || !result[0] || !result[0][0]) {
       return res.status(404).json({ success: false, message: 'Card not found' });
@@ -60,14 +60,13 @@ export const addFindingsToHistory = async (req, res) => {
     let historyArray = result[0][0].history;
     try {
       historyArray = typeof historyArray === 'string' ? JSON.parse(historyArray || '[]') : (Array.isArray(historyArray) ? historyArray : []);
-      // Filter out invalid entries
       historyArray = historyArray.filter(item => item && typeof item === 'object' && (item.new_findings || item.prescribed));
     } catch (e) {
       console.error('Error parsing history:', e);
       historyArray = [];
     }
 
-    // Add new entry to history
+    // i am adding new entry to history
     const newEntry = {
       new_findings: new_findings || '',
       prescribed: prescribed || ''
@@ -76,7 +75,7 @@ export const addFindingsToHistory = async (req, res) => {
       historyArray.push(newEntry);
     }
 
-    // Update the database
+    // Upd the database
     const updateResult = await card.addNewFindingsToHistory(card_id, historyArray);
     if (!updateResult || updateResult[0].affectedRows === 0) {
       return res.status(404).json({ success: false, message: 'Failed to update history' });

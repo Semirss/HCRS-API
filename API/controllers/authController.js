@@ -12,7 +12,6 @@ export const login = async (req, res) => {
     if (!result.success) {
       return res.status(result.message === 'User not found' ? 404 : 401).json(result);
     }
-    // Log response for debugging
     console.log('Login response for user', { name, data: result.data });
     res.status(200).json({ success: true, message: 'Login success', data: result.data });
   } catch (err) {

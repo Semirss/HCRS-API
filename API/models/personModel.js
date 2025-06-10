@@ -1,17 +1,42 @@
 import mysqlConnection from "../config/db.js";
 
 class Person {
-    constructor({ name = null, email = null, address = null, phone_number = null, password = null, role = null } = {}) {
-        if (!name && !email && !phone_number && !password && !role) {
-            console.warn("Person constructor called with no valid fields; using defaults");
-        }
-        this.name = name || null;
-        this.email = email || null;
-        this.address = address || null;
-        this.phone_number = phone_number || null;
-        this.password = password || null;
-        this.role = role || null;
+  constructor(...args) {
+    // Object-style parameter
+    if (args.length === 1 && typeof args[0] === 'object' && args[0] !== null) {
+      const {
+        name = null,
+        email = null,
+        address = null,
+        phone_number = null,
+        password = null,
+        role = null,
+      } = args[0];
+
+      if (!name && !email && !phone_number && !password && !role) {
+        console.warn("Person constructor called with no valid fields; using defaults");
+      }
+
+      this.name = name;
+      this.email = email;
+      this.address = address;
+      this.phone_number = phone_number;
+      this.password = password;
+      this.role = role;
     }
+
+    // Positional arguments fallback
+    else {
+      const [name, email = null, address = null, phone_number = null, password = null, role = null] = args;
+
+      this.name = name || null;
+      this.email = email || null;
+      this.address = address || null;
+      this.phone_number = phone_number || null;
+      this.password = password || null;
+      this.role = role || null;
+    }
+  }
 
     async login(name, password) {
         const query = `
